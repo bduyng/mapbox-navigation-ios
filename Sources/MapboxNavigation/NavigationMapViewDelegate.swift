@@ -114,29 +114,6 @@ public extension NavigationMapViewDelegate {
     /**
      `UnimplementedLogging` prints a warning to standard output the first time this method is called.
      */
-    func navigationMapView(_ navigationMapView: NavigationMapView, waypointCircleLayerWithIdentifier identifier: String, sourceIdentifier: String) -> CircleLayer? {
-        logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
-        return nil
-    }
-    
-    /**
-     `UnimplementedLogging` prints a warning to standard output the first time this method is called.
-     */
-    func navigationMapView(_ navigationMapView: NavigationMapView, waypointSymbolLayerWithIdentifier identifier: String, sourceIdentifier: String) -> SymbolLayer? {
-        logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
-        return nil
-    }
-    
-    /**
-     `UnimplementedLogging` prints a warning to standard output the first time this method is called.
-     */
-    func navigationMapView(_ navigationMapView: NavigationMapView, didSelect route: Route) {
-        logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
-    }
-
-    /**
-     `UnimplementedLogging` prints a warning to standard output the first time this method is called.
-     */
     func navigationMapView(_ navigationMapView: NavigationMapView, shapeFor route: Route) -> LineString? {
         logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
         return nil
@@ -153,8 +130,17 @@ public extension NavigationMapViewDelegate {
     /**
      `UnimplementedLogging` prints a warning to standard output the first time this method is called.
      */
-    func navigationMapView(_ navigationMapView: NavigationMapView, didSelect waypoint: Waypoint) {
+    func navigationMapView(_ navigationMapView: NavigationMapView, waypointCircleLayerWithIdentifier identifier: String, sourceIdentifier: String) -> CircleLayer? {
         logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
+        return nil
+    }
+    
+    /**
+     `UnimplementedLogging` prints a warning to standard output the first time this method is called.
+     */
+    func navigationMapView(_ navigationMapView: NavigationMapView, waypointSymbolLayerWithIdentifier identifier: String, sourceIdentifier: String) -> SymbolLayer? {
+        logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
+        return nil
     }
     
     /**
@@ -168,8 +154,14 @@ public extension NavigationMapViewDelegate {
     /**
      `UnimplementedLogging` prints a warning to standard output the first time this method is called.
      */
-    func navigationMapViewUserAnchorPoint(_ navigationMapView: NavigationMapView) -> CGPoint {
+    func navigationMapView(_ navigationMapView: NavigationMapView, didSelect route: Route) {
         logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
-        return .zero
+    }
+    
+    /**
+     `UnimplementedLogging` prints a warning to standard output the first time this method is called.
+     */
+    func navigationMapView(_ navigationMapView: NavigationMapView, didSelect waypoint: Waypoint) {
+        logUnimplemented(protocolType: NavigationMapViewDelegate.self, level: .debug)
     }
 }
