@@ -665,8 +665,6 @@ extension NavigationViewController: NavigationServiceDelegate {
     }
 
     public func navigationService(_ service: NavigationService, willBeginSimulating progress: RouteProgress, becauseOf reason: SimulationIntent) {
-        navigationMapView?.mapView.locationManager.locationProvider.stopUpdatingLocation()
-        navigationMapView?.mapView.locationManager.locationProvider.stopUpdatingHeading()
         for component in navigationComponents {
             component.navigationService(service, willBeginSimulating: progress, becauseOf: reason)
         }

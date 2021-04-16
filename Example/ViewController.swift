@@ -166,6 +166,11 @@ class ViewController: UIViewController {
     
     @IBAction func simulateButtonPressed(_ sender: Any) {
         simulationButton.isSelected = !simulationButton.isSelected
+        if simulationButton.isSelected {
+            navigationMapView.mapView.locationManager.overrideLocationProvider(with: AppleLocationProvider())
+        } else {
+            setupPassiveLocationManager()
+        }
     }
 
     @IBAction func clearMapPressed(_ sender: Any) {
@@ -474,6 +479,9 @@ class ViewController: UIViewController {
     func navigationService(route: Route, routeIndex: Int, options: RouteOptions) -> NavigationService {
         let mode: SimulationMode = simulationButton.isSelected ? .always : .onPoorGPS
         
+        if simulationButton.isSelected {
+            navigationMapView.mapView.locationManager.overrideLocationProvider(with: AppleLocationProvider())
+        }
         return MapboxNavigationService(route: route, routeIndex: routeIndex, routeOptions: options, simulating: mode)
     }
     

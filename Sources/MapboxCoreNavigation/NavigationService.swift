@@ -325,11 +325,11 @@ public class MapboxNavigationService: NSObject, NavigationService {
             router.locationManager?(nativeLocationSource, didUpdateLocations: [location])
         }
         
+        nativeLocationSource.startUpdatingHeading()
+        nativeLocationSource.startUpdatingLocation()
+        
         if simulationMode == .always {
             simulate()
-        } else {
-            nativeLocationSource.startUpdatingHeading()
-            nativeLocationSource.startUpdatingLocation()
         }
         
         eventsManager.sendRouteRetrievalEvent()
