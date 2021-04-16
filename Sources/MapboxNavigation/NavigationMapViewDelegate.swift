@@ -6,14 +6,14 @@ import MapboxMaps
 import Turf
 
 /**
- The `NavigationMapViewDelegate` provides methods for configuring the NavigationMapView, as well as responding to events triggered by the NavigationMapView.
+ The `NavigationMapViewDelegate` provides methods for configuring the `NavigationMapView`, as well as responding to events triggered by the `NavigationMapView`.
  */
 public protocol NavigationMapViewDelegate: class, UnimplementedLogging {
    
     /**
      Asks the receiver to return a `LineLayer` for the route line, given a layer identifier and a source identifier.
      This method is invoked when the map view loads and any time routes are added.
-     - parameter navigationMapView: The NavigationMapView.
+     - parameter navigationMapView: The `NavigationMapView`.
      - parameter identifier: The line layer identifier.
      - parameter sourceIdentifier: The source identifier containing the route data that this method would style.
      - returns: A `LineLayer` that is applied to the route line.
@@ -34,7 +34,7 @@ public protocol NavigationMapViewDelegate: class, UnimplementedLogging {
      Asks the receiver to return an `LineString` that describes the geometry of the route.
         
      Resulting `LineString` will then be styled using `NavigationMapView.navigationMapView(_:routeLineLayerWithIdentifier:sourceIdentifier:)` provided style or a default congestion style if above delegate method was not implemented.
-     - parameter navigationMapView: The NavigationMapView.
+     - parameter navigationMapView: The `NavigationMapView`.
      - parameter route: The route that the sender is asking about.
      - returns: A `LineString` object that defines the shape of the route, or `nil` in case of default behavior.
      */
@@ -44,7 +44,7 @@ public protocol NavigationMapViewDelegate: class, UnimplementedLogging {
      Asks the receiver to return an `LineString` that describes the geometry of the route casing.
      
      Resulting `LineString` will then be styled using `NavigationMapView.navigationMapView(_:routeCasingLineLayerWithIdentifier:sourceIdentifier:)` provided style or a default style if above delegate method was not implemented.
-     - parameter navigationMapView: The NavigationMapView.
+     - parameter navigationMapView: The `NavigationMapView`.
      - parameter route: The route that the sender is asking about.
      - returns: A `LineString` object that defines the shape of the route casing, or `nil` in case of default behavior.
      */
@@ -71,6 +71,14 @@ public protocol NavigationMapViewDelegate: class, UnimplementedLogging {
     func navigationMapView(_ navigationMapView: NavigationMapView, waypointSymbolLayerWithIdentifier identifier: String, sourceIdentifier: String) -> SymbolLayer?
 
     /**
+     Asks the receiver to return a `FeatureCollection` that describes the geometry of the waypoint.
+     - parameter navigationMapView: The `NavigationMapView`.
+     - parameter waypoints: The waypoints to be displayed on the map.
+     - returns: Optionally, a `FeatureCollection` that defines the shape of the waypoint, or `nil` to use default behavior.
+     */
+    func navigationMapView(_ navigationMapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection?
+    
+    /**
      Tells the receiver that the user has selected a route by interacting with the map view.
      - parameter navigationMapView: The `NavigationMapView`.
      - parameter route: The route that was selected.
@@ -83,14 +91,6 @@ public protocol NavigationMapViewDelegate: class, UnimplementedLogging {
      - parameter waypoint: The waypoint that was selected.
      */
     func navigationMapView(_ navigationMapView: NavigationMapView, didSelect waypoint: Waypoint)
-    
-    /**
-     Asks the receiver to return a `FeatureCollection` that describes the geometry of the waypoint.
-     - parameter navigationMapView: The `NavigationMapView`.
-     - parameter waypoints: The waypoints to be displayed on the map.
-     - returns: Optionally, a `FeatureCollection` that defines the shape of the waypoint, or `nil` to use default behavior.
-     */
-    func navigationMapView(_ navigationMapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection?
 }
 
 public extension NavigationMapViewDelegate {
