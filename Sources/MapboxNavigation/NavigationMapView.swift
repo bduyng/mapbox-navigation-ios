@@ -96,7 +96,14 @@ open class NavigationMapView: UIView {
      Most recent user location, which is used to place `UserCourseView`.
      */
     var mostRecentUserCourseViewLocation: CLLocation?
-    var routes: [Route]?
+    var congestionSegments: [Feature] = []
+    var routes: [Route]? {
+        didSet {
+            if let route = routes?.first {
+                congestionSegments = route.congestionFeatures(roadClassesWithOverriddenCongestionLevels: self.roadClassesWithOverriddenCongestionLevels)
+            }
+        }
+    }
     var routePoints: RoutePoints?
     var routeLineGranularDistances: RouteLineGranularDistances?
     var routeRemainingDistancesIndex: Int?
