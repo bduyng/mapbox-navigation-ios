@@ -125,7 +125,7 @@ extension ViewController {
     }
     
     func edgeNames(identifier: ElectronicHorizon.Edge.Identifier) -> [String] {
-        guard let passiveLocationDataSource = (navigationMapView.mapView.locationManager.locationProvider as? PassiveLocationManager)?.dataSource else { return [] }
+        let passiveLocationDataSource = (navigationMapView.mapView.locationManager.locationProvider as! PassiveLocationManager).dataSource
         guard let metadata = passiveLocationDataSource.roadGraph.edgeMetadata(edgeIdentifier: identifier) else {
             return []
         }

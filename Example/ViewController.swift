@@ -154,6 +154,8 @@ class ViewController: UIViewController {
         navigationMapView.removeRoutes()
         navigationMapView.removeWaypoints()
         waypoints.removeAll()
+        navigationMapView.mapView.locationManager.locationProvider.startUpdatingHeading()
+        navigationMapView.mapView.locationManager.locationProvider.startUpdatingLocation()
     }
     
     func requestNotificationCenterAuthorization() {
@@ -166,10 +168,13 @@ class ViewController: UIViewController {
     
     @IBAction func simulateButtonPressed(_ sender: Any) {
         simulationButton.isSelected = !simulationButton.isSelected
+        // When the simulation mode is on and the `LocationProvider` of the `MapView` is set up as `PassiveLocationManager`, the `NavigationMapView` should stop receiving location updates from the `PassiveLocationManager` and simply follow the simulated route during turn-by-turn navigation.
         if simulationButton.isSelected {
-            navigationMapView.mapView.locationManager.overrideLocationProvider(with: AppleLocationProvider())
+            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingHeading()
+            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingLocation()
         } else {
-            setupPassiveLocationManager()
+            navigationMapView.mapView.locationManager.locationProvider.startUpdatingHeading()
+            navigationMapView.mapView.locationManager.locationProvider.startUpdatingLocation()
         }
     }
 
@@ -478,9 +483,9 @@ class ViewController: UIViewController {
 
     func navigationService(route: Route, routeIndex: Int, options: RouteOptions) -> NavigationService {
         let mode: SimulationMode = simulationButton.isSelected ? .always : .onPoorGPS
-        
         if simulationButton.isSelected {
-            navigationMapView.mapView.locationManager.overrideLocationProvider(with: AppleLocationProvider())
+            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingHeading()
+            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingLocation()
         }
         return MapboxNavigationService(route: route, routeIndex: routeIndex, routeOptions: options, simulating: mode)
     }
