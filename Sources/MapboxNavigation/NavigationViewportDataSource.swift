@@ -77,6 +77,10 @@ public class NavigationViewportDataSource: ViewportDataSource {
     var viewportPadding: UIEdgeInsets = .zero
     
     weak var mapView: MapView?
+
+    var currentRoute: Route?
+    
+    var currentAverageIntersectionDistances: [[CLLocationDistance]] = []
     
     // MARK: - Initializer methods
     
@@ -222,26 +226,19 @@ public class NavigationViewportDataSource: ViewportDataSource {
                 center = adjustedCenter
             }
             
-            let averageIntersectionDistances = routeProgress.route.legs.map { (leg) -> [CLLocationDistance] in
-                return leg.steps.map { (step) -> CLLocationDistance in
-                    if let firstStepCoordinate = step.shape?.coordinates.first,
-                       let lastStepCoordinate = step.shape?.coordinates.last {
-                        let intersectionLocations = [firstStepCoordinate] + (step.intersections?.map({ $0.location }) ?? []) + [lastStepCoordinate]
-                        let intersectionDistances = intersectionLocations[1...].enumerated().map({ (index, intersection) -> CLLocationDistance in
-                            return intersection.distance(to: intersectionLocations[index])
-                        })
-                        let filteredIntersectionDistances = intersectionDistances.filter { $0 > 20 }
-                        let averageIntersectionDistance = filteredIntersectionDistances.reduce(0.0, +) / Double(filteredIntersectionDistances.count)
-                        return averageIntersectionDistance
-                    }
-                    
-                    return 0.0
-                }
-            }
-            
             let currentRouteLegIndex = routeProgress.legIndex
             let currentRouteStepIndex = routeProgress.currentLegProgress.stepIndex
             let numberOfIntersections = 10
+            
+            var averageIntersectionDistances: [[CLLocationDistance]]
+            if let currentRoute = currentRoute, currentRoute == routeProgress.route {
+                averageIntersectionDistances = currentAverageIntersectionDistances
+            } else {
+                currentRoute = routeProgress.route
+                currentAverageIntersectionDistances = self.averageIntersectionDistances(routeProgress.route)
+                averageIntersectionDistances = currentAverageIntersectionDistances
+            }
+            
             let lookaheadDistance = averageIntersectionDistances[currentRouteLegIndex][currentRouteStepIndex] * Double(numberOfIntersections)
             let coordinatesForIntersections = coordinatesToManeuver.sliced(from: nil, to: LineString(coordinatesToManeuver).coordinateFromStart(distance: fmax(lookaheadDistance, 150.0)))
             let bearing = self.bearing(location.course, coordinatesToManeuver: coordinatesForIntersections)
@@ -420,5 +417,26 @@ extension NavigationViewportDataSource: LocationConsumer {
     public func locationUpdate(newLocation: Location) {
         let cameraOptions = self.cameraOptions(newLocation.internalLocation)
         delegate?.viewportDataSource(self, didUpdate: cameraOptions)
+    }
+    
+    func averageIntersectionDistances(_ route: Route) -> [[CLLocationDistance]] {
+        let averageIntersectionDistances = route.legs.map { (leg) -> [CLLocationDistance] in
+            return leg.steps.map { (step) -> CLLocationDistance in
+                if let firstStepCoordinate = step.shape?.coordinates.first,
+                   let lastStepCoordinate = step.shape?.coordinates.last {
+                    let intersectionLocations = [firstStepCoordinate] + (step.intersections?.map({ $0.location }) ?? []) + [lastStepCoordinate]
+                    let intersectionDistances = intersectionLocations[1...].enumerated().map({ (index, intersection) -> CLLocationDistance in
+                        return intersection.distance(to: intersectionLocations[index])
+                    })
+                    let filteredIntersectionDistances = intersectionDistances.filter { $0 > 20 }
+                    let averageIntersectionDistance = filteredIntersectionDistances.reduce(0.0, +) / Double(filteredIntersectionDistances.count)
+                    return averageIntersectionDistance
+                }
+                
+                return 0.0
+            }
+        }
+        
+        return averageIntersectionDistances
     }
 }
