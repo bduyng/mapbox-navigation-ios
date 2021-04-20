@@ -150,12 +150,10 @@ class ViewController: UIViewController {
         clearMap.isHidden = true
         longPressHintView.isHidden = false
         
-        navigationMapView.unhighlightBuildings()
-        navigationMapView.removeRoutes()
-        navigationMapView.removeWaypoints()
+        navigationMapView?.unhighlightBuildings()
+        navigationMapView?.removeRoutes()
+        navigationMapView?.removeWaypoints()
         waypoints.removeAll()
-        navigationMapView.mapView.locationManager.locationProvider.startUpdatingHeading()
-        navigationMapView.mapView.locationManager.locationProvider.startUpdatingLocation()
     }
     
     func requestNotificationCenterAuthorization() {
@@ -169,13 +167,6 @@ class ViewController: UIViewController {
     @IBAction func simulateButtonPressed(_ sender: Any) {
         simulationButton.isSelected = !simulationButton.isSelected
         // When the simulation mode is on and the `LocationProvider` of the `MapView` is set up as `PassiveLocationManager`, the `NavigationMapView` should stop receiving location updates from the `PassiveLocationManager` and simply follow the simulated route during turn-by-turn navigation.
-        if simulationButton.isSelected {
-            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingHeading()
-            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingLocation()
-        } else {
-            navigationMapView.mapView.locationManager.locationProvider.startUpdatingHeading()
-            navigationMapView.mapView.locationManager.locationProvider.startUpdatingLocation()
-        }
     }
 
     @IBAction func clearMapPressed(_ sender: Any) {
@@ -194,7 +185,7 @@ class ViewController: UIViewController {
 
         guard activeNavigationViewController == nil else { return }
 
-        present(navigationViewController)
+        presentAndRemoveMapview(navigationViewController)
     }
     
     func beginCarPlayNavigation() {
@@ -251,7 +242,7 @@ class ViewController: UIViewController {
         // Example of building highlighting in 2D.
         navigationViewController.waypointStyle = .building
         
-        present(navigationViewController, completion: beginCarPlayNavigation)
+        presentAndRemoveMapview(navigationViewController, completion: beginCarPlayNavigation)
     }
     
     func startBasicNavigation() {
@@ -272,7 +263,7 @@ class ViewController: UIViewController {
         // Control floating buttons position in a navigation view.
         navigationViewController.floatingButtonsPosition = .topTrailing
         
-        present(navigationViewController)
+        presentAndRemoveMapview(navigationViewController)
     }
     
     func startCustomNavigation() {
@@ -301,7 +292,7 @@ class ViewController: UIViewController {
         let navigationViewController = NavigationViewController(for: route, routeIndex: 0, routeOptions: routeOptions, navigationOptions: options)
         navigationViewController.delegate = self
 
-        present(navigationViewController, completion: beginCarPlayNavigation)
+        presentAndRemoveMapview(navigationViewController, completion: beginCarPlayNavigation)
     }
     
     func startGuidanceCardsNavigation() {
@@ -314,7 +305,7 @@ class ViewController: UIViewController {
         let navigationViewController = NavigationViewController(for: route, routeIndex: 0, routeOptions: routeOptions, navigationOptions: options)
         navigationViewController.delegate = self
         
-        present(navigationViewController, completion: beginCarPlayNavigation)
+        presentAndRemoveMapview(navigationViewController, completion: beginCarPlayNavigation)
     }
     
     // MARK: - UIGestureRecognizer methods
@@ -460,12 +451,13 @@ class ViewController: UIViewController {
         return navigationViewController
     }
     
-    func present(_ navigationViewController: NavigationViewController, completion: CompletionHandler? = nil) {
+    func presentAndRemoveMapview(_ navigationViewController: NavigationViewController, completion: CompletionHandler? = nil) {
         navigationViewController.modalPresentationStyle = .fullScreen
         activeNavigationViewController = navigationViewController
         
         present(navigationViewController, animated: true) {
             completion?()
+            self.navigationMapView = nil
         }
     }
     
@@ -483,10 +475,7 @@ class ViewController: UIViewController {
 
     func navigationService(route: Route, routeIndex: Int, options: RouteOptions) -> NavigationService {
         let mode: SimulationMode = simulationButton.isSelected ? .always : .onPoorGPS
-        if simulationButton.isSelected {
-            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingHeading()
-            navigationMapView.mapView.locationManager.locationProvider.stopUpdatingLocation()
-        }
+
         return MapboxNavigationService(route: route, routeIndex: routeIndex, routeOptions: options, simulating: mode)
     }
     
